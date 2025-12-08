@@ -1,5 +1,5 @@
 HELP.md
-target/
+*.class
 api/.mvn/wrapper/maven-wrapper.jar
 
 ### STS ###
@@ -10,6 +10,7 @@ api/.mvn/wrapper/maven-wrapper.jar
 .settings
 .springBeans
 .sts4-cache
+/target/
 
 ### IntelliJ IDEA ###
 .idea
@@ -24,8 +25,6 @@ api/.mvn/wrapper/maven-wrapper.jar
 /nbdist/
 /.nb-gradle/
 build/
-!**/src/main/**/build/
-!**/src/test/**/build/
 
 ### VS Code ###
 .vscode/
@@ -35,5 +34,5 @@ build/
 # START Ruler Generated Files
 /CLAUDE.md
 /CLAUDE.md.bak
+.claude
 # END Ruler Generated Files
-

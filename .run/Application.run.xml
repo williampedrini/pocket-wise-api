@@ -1,7 +1,7 @@
 <component name="ProjectRunConfigurationManager">
   <configuration default="false" name="Application" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot" nameIsGenerated="true">
     <option name="ACTIVE_PROFILES" value="sandbox" />
-    <module name="api" />
+    <module name="pocket-wise-api" />
     <option name="SPRING_BOOT_MAIN_CLASS" value="com.pocketwise.application.Application" />
     <option name="VM_PARAMETERS" value="-Djasypt.encryptor.password=UGNn9KCjt!3nArR!" />
     <extension name="software.aws.toolkits.jetbrains.core.execution.JavaAwsConnectionExtension">

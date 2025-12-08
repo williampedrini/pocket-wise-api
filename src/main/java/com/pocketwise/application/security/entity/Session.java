@@ -32,7 +32,7 @@ public class Session {
     @Column(name = "EMAIL", nullable = false)
     private String email;
 
-    @Column(name = "TOKEN", unique = true, nullable = false)
+    @Column(name = "TOKEN", unique = true)
     private String token;
 
     @OneToMany(mappedBy = "session", fetch = FetchType.LAZY)

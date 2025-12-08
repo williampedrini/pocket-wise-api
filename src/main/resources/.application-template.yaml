@@ -21,14 +21,14 @@ spring:
 
 springdoc:
   api-docs:
-    enabled: false
+    enabled: true
 
 integration:
   api:
-    application-id: 297db22b-d3bb-4782-83a1-e4da120708e3
+    application-id: <YOUR_ENABLE_BANKING_APPLICATION_ID>
     base-url: https://api.enablebanking.com
-    callback-url: https://pocket-wise.ngrok.app/api/authorization/callback
-    private-key-path: classpath:private-key.pem
+    callback-url: https://convenient-judi-spectrochemical.ngrok-free.dev/api/authorization/callback
+    private-key-path: classpath:<YOUR_ENABLE_BANKING_CERTIFICATE>
     jwt-expiration-seconds: 3600000 #40 days
     connect-timeout: 10000
     read-timeout: 30000

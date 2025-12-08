@@ -1,0 +1,46 @@
+spring:
+  application:
+    name: pocket-wise
+  datasource:
+    url: jdbc:postgresql://localhost:5432/pocketwise
+    driver-class-name: org.postgresql.Driver
+    username: pocketwise
+    password: pocketwise
+  jpa:
+    hibernate:
+      ddl-auto: update
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+  security:
+    oauth2:
+      client:
+        registration:
+          google:
+            client-id: ENC(htPMUg6NBklG66yO1PRPG7jI4YNP4Fa7mWDA9P6ItTFvm0l3jnYixhcbKmMq2sniGDHodfExfGcsL9gjNEN0iPd7iB085jpi6cCbgVKQcSnA30DL9669q8MWrC3DGruGD+iXJH/iwvFHyUYRqKsSMA==)
+            client-secret: ENC(mEdXmzYDF7mPtbmVwFKi8YaeiHkI4RQXE7iE419xoLWHorTaMY/+DuvBmQXh4lHFCmxr7rqr4irzg1BoeSGcc58Sq6Q90poVDnj0uEJNcgo=)
+            scope: openid, profile, email
+
+springdoc:
+  api-docs:
+    enabled: false
+
+integration:
+  api:
+    application-id: 297db22b-d3bb-4782-83a1-e4da120708e3
+    base-url: https://api.enablebanking.com
+    callback-url: https://pocket-wise.ngrok.app/api/authorization/callback
+    private-key-path: classpath:private-key.pem
+    jwt-expiration-seconds: 3600000 #40 days
+    connect-timeout: 10000
+    read-timeout: 30000
+    retry:
+      max-attempts: 3
+      initial-interval: 1000
+      multiplier: 2.0
+
+feign:
+  client:
+    config:
+      default:
+        connectTimeout: 10000
+        readTimeout: 30000
+        loggerLevel: FULL

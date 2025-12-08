@@ -1,0 +1,28 @@
+sequenceDiagram
+    participant Client
+    participant Application
+    participant EnableBanking
+    participant Bank
+    
+    Client->>Application: GET /authorize
+    Application->>EnableBanking: Request authorization URL
+    EnableBanking-->>Application: Return access URL
+    Application-->>Client: Redirect to access URL
+    
+    Client->>Bank: User lands on bank page
+    Note over Client,Bank: User performs authorization
+    Bank-->>Client: Authorization complete
+    
+    Bank->>Application: Redirect to /callback with code
+    Note over Application: Receives code parameter
+    
+    Application->>EnableBanking: POST /session (with code)
+    EnableBanking-->>Application: Return session with session_id
+    
+    Application->>EnableBanking: GET /session/{id}
+    EnableBanking-->>Application: Return list of accounts
+    
+    Application->>EnableBanking: GET /accounts/{id}
+    EnableBanking-->>Application: Return account details
+    
+    Application-->>Client: Display account information

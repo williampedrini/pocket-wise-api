@@ -30,6 +30,7 @@ build/
 .vscode/
 
 *private-key.pem
+*.application.yaml
 
 # START Ruler Generated Files
 /CLAUDE.md

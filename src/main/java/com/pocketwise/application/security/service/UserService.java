@@ -3,8 +3,9 @@ package com.pocketwise.application.security.service;
 import static java.util.Optional.ofNullable;
 
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
-import org.springframework.security.oauth2.core.user.OAuth2User;
+import org.springframework.security.oauth2.jwt.Jwt;
+import org.springframework.security.oauth2.server.resource.authentication.AbstractOAuth2TokenAuthenticationToken;
+import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 import org.springframework.stereotype.Service;
 
 import com.pocketwise.application.security.dto.UserDTO;
@@ -25,10 +26,10 @@ public class UserService {
      */
     public UserDTO getSessionUser() {
         return ofNullable(SecurityContextHolder.getContext().getAuthentication())
-                .filter(OAuth2AuthenticationToken.class::isInstance)
-                .map(OAuth2AuthenticationToken.class::cast)
-                .map(OAuth2AuthenticationToken::getPrincipal)
-                .map(OAuth2User::getAttributes)
+                .filter(JwtAuthenticationToken.class::isInstance)
+                .map(JwtAuthenticationToken.class::cast)
+                .map(AbstractOAuth2TokenAuthenticationToken::getToken)
+                .map(Jwt::getClaims)
                 .map(mapper::map)
                 .orElseThrow(() -> {
                     final String message = "No session user found.";

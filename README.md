@@ -13,6 +13,7 @@ _Important: Encrypted configuration properties are managed via Jasypt. A Jasypt 
 - Open Run/Debug Configuration for `Application`.
 - VM options: `-Djasypt.encryptor.password=YOUR_PASSWORD`
 - Copy the certificate `(private-key.pem)` to the `src/main/resources` folder. (ask the admin)
+- Rename the [.application-template.yaml](src/main/resources/.application-template.yaml) to `application.yaml` and change the necessary properties.
 - Run.
 
 ### Expose with ngrok

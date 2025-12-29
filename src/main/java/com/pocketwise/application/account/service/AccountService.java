@@ -9,6 +9,7 @@ import java.util.UUID;
 import jakarta.annotation.Nonnull;
 import jakarta.annotation.Nullable;
 
+import org.jasypt.encryption.StringEncryptor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
@@ -34,6 +35,22 @@ public class AccountService {
     private final AccountMapper mapper;
     private final UserService userService;
     private final AccountRepository repository;
+    private final StringEncryptor encryptor;
+
+    /**
+     * Retrieves all accounts associated with the current session user.
+     *
+     * @return a collection of {@link AccountDTO} objects linked to the session user;
+     *         an empty collection is returned if no accounts are found.
+     */
+    @Nonnull
+    public Collection<AccountDTO> findAllBySessionUser() {
+        final String encryptedEmail =
+                encryptor.encrypt(userService.getSessionUser().email());
+        return repository.findAllBySessionEmail(encryptedEmail).stream()
+                .map(mapper::map)
+                .toList();
+    }
 
     /**
      * Retrieves the account information corresponding to the provided UUID.

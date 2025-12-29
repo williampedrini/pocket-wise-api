@@ -33,6 +33,18 @@ class AccountController {
 
     private final AccountService service;
 
+    @GetMapping
+    @Operation(
+            summary = "Get accounts by session user",
+            description = "Retrieves all account details for the given session user.")
+    @ApiResponses({
+        @ApiResponse(responseCode = "200", description = "Accounts retrieved"),
+        @ApiResponse(responseCode = "500", description = "Internal server error")
+    })
+    Collection<AccountDTO> findAllBySessionUser() {
+        return service.findAllBySessionUser();
+    }
+
     @GetMapping("/{uuid}")
     @Operation(summary = "Get account by UUID", description = "Retrieves account details for the given account UUID.")
     @ApiResponses({

@@ -4,6 +4,7 @@ import static org.apache.commons.lang3.StringUtils.isNotBlank;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.UUID;
 
 import jakarta.annotation.Nonnull;
 import jakarta.annotation.Nullable;
@@ -35,21 +36,19 @@ public class AccountService {
     private final AccountRepository repository;
 
     /**
-     * Retrieves the account information corresponding to the provided IBAN.
+     * Retrieves the account information corresponding to the provided UUID.
      *
-     * @param iban the International Bank Account Number (IBAN) used to search for the account; must not be null or empty.
-     * @return an {@link AccountDTO} containing the account information associated with the given IBAN.
-     * @throws IllegalArgumentException if the IBAN is not found, or if the provided IBAN is null or empty.
+     * @param uuid the unique identifier used to search for the account; must not be null.
+     * @return an {@link AccountDTO} containing the account information associated with the given UUID.
+     * @throws IllegalArgumentException if the account is not found, or if the provided UUID is null.
      */
     @Nonnull
-    public AccountDTO findByIban(@Nonnull final String iban) {
-        Assert.hasText(iban, "The IBAN is mandatory.");
-        final Account account = repository
-                .findTopByIbanOrderByCreatedAtDesc(iban)
-                .orElseThrow(() -> {
-                    final String message = String.format("The IBAN is not found for %s", iban);
-                    return new IllegalArgumentException(message);
-                });
+    public AccountDTO findByUuid(@Nonnull final UUID uuid) {
+        Assert.notNull(uuid, "The UUID is mandatory.");
+        final Account account = repository.findByUuid(uuid).orElseThrow(() -> {
+            final String message = String.format("The account is not found for %s", uuid);
+            return new IllegalArgumentException(message);
+        });
         final UserDTO sessionUser = userService.getSessionUser();
         if (sessionUser.email().equalsIgnoreCase(account.getSession().getEmail())) {
             return client.findById(account.getUuid());
@@ -59,21 +58,19 @@ public class AccountService {
     }
 
     /**
-     * Retrieves all account balances associated with the account linked to the provided IBAN.
+     * Retrieves all account balances associated with the account linked to the provided UUID.
      *
-     * @param iban the International Bank Account Number (IBAN) used to search for the associated account; must not be null or empty.
-     * @return an {@link AccountBalanceWrapperDTO} containing all balances related to the account associated with the given IBAN.
-     * @throws IllegalArgumentException if the IBAN is not found, or if the provided IBAN is null or empty.
+     * @param uuid the unique identifier used to search for the associated account; must not be null.
+     * @return an {@link AccountBalanceWrapperDTO} containing all balances related to the account associated with the given UUID.
+     * @throws IllegalArgumentException if the account is not found, or if the provided UUID is null.
      */
     @Nonnull
-    public Collection<AccountBalanceDTO> findAllBalancesByIban(@Nonnull final String iban) {
-        Assert.hasText(iban, "The IBAN is mandatory.");
-        final Account account = repository
-                .findTopByIbanOrderByCreatedAtDesc(iban)
-                .orElseThrow(() -> {
-                    final String message = String.format("The IBAN is not found for %s", iban);
-                    return new IllegalArgumentException(message);
-                });
+    public Collection<AccountBalanceDTO> findAllBalancesByUuid(@Nonnull final UUID uuid) {
+        Assert.notNull(uuid, "The UUID is mandatory.");
+        final Account account = repository.findByUuid(uuid).orElseThrow(() -> {
+            final String message = String.format("The account is not found for %s", uuid);
+            return new IllegalArgumentException(message);
+        });
         final UserDTO sessionUser = userService.getSessionUser();
         if (sessionUser.email().equalsIgnoreCase(account.getSession().getEmail())) {
             return client.findAllBalancesByAccountId(account.getUuid()).balances();
@@ -91,28 +88,28 @@ public class AccountService {
     public void create(@Nonnull final Session session, @Nonnull final AccountDTO account) {
         Assert.notNull(session, "The session is mandatory");
         Assert.notNull(account, "The account is mandatory");
-        final Account entity = mapper.map(account);
+        final Account entity = repository.findByUuid(account.uid()).orElseGet(() -> mapper.map(account));
         entity.setSession(session);
         repository.save(entity);
     }
 
     /**
-     * Retrieves all transactions for the account associated with the provided IBAN,
+     * Retrieves all transactions for the account associated with the provided UUID,
      * automatically handling pagination to fetch all available transactions.
      *
-     * @param iban the International Bank Account Number (IBAN) used to search for the associated account; must not be null or empty.
+     * @param uuid the unique identifier used to search for the associated account; must not be null.
      * @param from the start date for filtering transactions in ISO 8601 format (YYYY-MM-DD); optional.
      * @param to the end date for filtering transactions in ISO 8601 format (YYYY-MM-DD); optional.
      * @return a {@link TransactionResponseDTO} containing all transactions with hasMore set to false.
-     * @throws IllegalArgumentException if the IBAN is not found, or if the provided IBAN is null or empty.
+     * @throws IllegalArgumentException if the account is not found, or if the provided UUID is null.
      */
     @Nonnull
-    public Collection<TransactionDTO> findAllTransactionsByIban(
-            @Nonnull final String iban, @Nullable final String from, @Nullable final String to) {
-        Assert.hasText(iban, "The IBAN is mandatory.");
-        log.debug("Fetching all transactions (with auto-pagination) for IBAN: {}, from: {}, to: {}", iban, from, to);
+    public Collection<TransactionDTO> findAllTransactionsByUuid(
+            @Nonnull final UUID uuid, @Nullable final String from, @Nullable final String to) {
+        Assert.notNull(uuid, "The UUID is mandatory.");
+        log.debug("Fetching all transactions (with auto-pagination) for UUID: {}, from: {}, to: {}", uuid, from, to);
 
-        final Account account = findAccountByIban(iban);
+        final Account account = findAccountByUuid(uuid);
         final Collection<TransactionDTO> transactions = new ArrayList<>();
         String continuation = null;
 
@@ -123,20 +120,20 @@ public class AccountService {
             continuation = wrapper.continuation();
         } while (isNotBlank(continuation));
 
-        log.debug("Total transactions fetched for IBAN {}: {}", iban, transactions.size());
+        log.debug("Total transactions fetched for UUID {}: {}", uuid, transactions.size());
         return transactions;
     }
 
     /**
-     * Finds the account entity by IBAN.
+     * Finds the account entity by UUID.
      *
-     * @param iban the International Bank Account Number (IBAN) to search for.
-     * @return the {@link Account} entity associated with the given IBAN.
-     * @throws IllegalArgumentException if the IBAN is not found.
+     * @param uuid the unique identifier to search for.
+     * @return the {@link Account} entity associated with the given UUID.
+     * @throws IllegalArgumentException if the account is not found.
      */
-    private Account findAccountByIban(@Nonnull final String iban) {
-        return repository.findTopByIbanOrderByCreatedAtDesc(iban).orElseThrow(() -> {
-            final String message = String.format("The IBAN is not found for %s", iban);
+    private Account findAccountByUuid(@Nonnull final UUID uuid) {
+        return repository.findByUuid(uuid).orElseThrow(() -> {
+            final String message = String.format("The account is not found for %s", uuid);
             return new IllegalArgumentException(message);
         });
     }

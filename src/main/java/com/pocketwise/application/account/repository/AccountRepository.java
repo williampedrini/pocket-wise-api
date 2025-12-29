@@ -1,6 +1,7 @@
 package com.pocketwise.application.account.repository;
 
 import java.util.Optional;
+import java.util.UUID;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 
@@ -9,11 +10,11 @@ import com.pocketwise.application.account.entity.Account;
 public interface AccountRepository extends JpaRepository<Account, Long> {
 
     /**
-     * Retrieves the most recently created account associated with the provided IBAN.
+     * Retrieves the account associated with the provided UUID.
      *
-     * @param iban the International Bank Account Number (IBAN) to search for; must not be null or empty.
-     * @return an {@link Optional} containing the most recently created {@link Account} associated with the given IBAN,
+     * @param uuid the unique identifier of the account to search for; must not be null.
+     * @return an {@link Optional} containing the {@link Account} associated with the given UUID,
      *         or an empty {@link Optional} if no such account exists.
      */
-    Optional<Account> findTopByIbanOrderByCreatedAtDesc(String iban);
+    Optional<Account> findByUuid(UUID uuid);
 }

@@ -7,6 +7,7 @@ import java.util.UUID;
 
 import jakarta.persistence.*;
 
+import com.pocketwise.application.common.converter.EncryptedStringConverter;
 import com.pocketwise.application.security.entity.Session;
 
 import lombok.AllArgsConstructor;
@@ -28,6 +29,7 @@ public class Account {
     @Column(name = "UUID", unique = true, nullable = false)
     private UUID uuid;
 
+    @Convert(converter = EncryptedStringConverter.class)
     @Column(name = "IBAN", nullable = false)
     private String iban;
 

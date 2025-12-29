@@ -1,6 +1,7 @@
 package com.pocketwise.application.account.controller;
 
 import java.util.Collection;
+import java.util.UUID;
 
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -32,52 +33,52 @@ class AccountController {
 
     private final AccountService service;
 
-    @GetMapping("/{iban}")
-    @Operation(summary = "Get account by IBAN", description = "Retrieves account details for the given account IBAN.")
+    @GetMapping("/{uuid}")
+    @Operation(summary = "Get account by UUID", description = "Retrieves account details for the given account UUID.")
     @ApiResponses({
         @ApiResponse(responseCode = "200", description = "Account retrieved"),
-        @ApiResponse(responseCode = "400", description = "Invalid account ID provided"),
+        @ApiResponse(responseCode = "400", description = "Invalid account UUID provided"),
         @ApiResponse(responseCode = "404", description = "Account not found"),
         @ApiResponse(responseCode = "500", description = "Internal server error")
     })
-    AccountDTO findByIban(@Parameter(description = "Account IBAN", required = true) @PathVariable String iban) {
-        return service.findByIban(iban);
+    AccountDTO findByUuid(@Parameter(description = "Account UUID", required = true) @PathVariable UUID uuid) {
+        return service.findByUuid(uuid);
     }
 
-    @GetMapping("/{iban}/balances")
+    @GetMapping("/{uuid}/balances")
     @Operation(
             summary = "Get account balances",
-            description = "Retrieves all balances associated with the given account IBAN.")
+            description = "Retrieves all balances associated with the given account UUID.")
     @ApiResponses({
         @ApiResponse(responseCode = "200", description = "Balances retrieved"),
-        @ApiResponse(responseCode = "400", description = "Invalid account ID provided"),
+        @ApiResponse(responseCode = "400", description = "Invalid account UUID provided"),
         @ApiResponse(responseCode = "404", description = "Account or balances not found"),
         @ApiResponse(responseCode = "500", description = "Internal server error")
     })
-    Collection<AccountBalanceDTO> findAllBalancesByIban(
-            @Parameter(description = "Account IBAN", required = true) @PathVariable String iban) {
-        return service.findAllBalancesByIban(iban);
+    Collection<AccountBalanceDTO> findAllBalancesByUuid(
+            @Parameter(description = "Account UUID", required = true) @PathVariable UUID uuid) {
+        return service.findAllBalancesByUuid(uuid);
     }
 
-    @GetMapping("/{iban}/transactions")
+    @GetMapping("/{uuid}/transactions")
     @Operation(
             summary = "Get account transactions",
-            description = "Retrieves transactions associated with the given account IBAN. "
+            description = "Retrieves transactions associated with the given account UUID. "
                     + "Supports optional date filtering and pagination via continuation key.")
     @ApiResponses({
         @ApiResponse(responseCode = "200", description = "Transactions retrieved"),
-        @ApiResponse(responseCode = "400", description = "Invalid account IBAN or date format provided"),
+        @ApiResponse(responseCode = "400", description = "Invalid account UUID or date format provided"),
         @ApiResponse(responseCode = "404", description = "Account not found"),
         @ApiResponse(responseCode = "500", description = "Internal server error")
     })
-    Collection<TransactionDTO> findAllTransactionsByIban(
-            @Parameter(description = "Account IBAN", required = true) @PathVariable String iban,
+    Collection<TransactionDTO> findAllTransactionsByUuid(
+            @Parameter(description = "Account UUID", required = true) @PathVariable UUID uuid,
             @Parameter(description = "Start date for filtering transactions (ISO 8601 format: YYYY-MM-DD)")
                     @RequestParam(required = false)
                     String from,
             @Parameter(description = "End date for filtering transactions (ISO 8601 format: YYYY-MM-DD)")
                     @RequestParam(required = false)
                     String to) {
-        return service.findAllTransactionsByIban(iban, from, to);
+        return service.findAllTransactionsByUuid(uuid, from, to);
     }
 }

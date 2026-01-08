@@ -9,7 +9,7 @@ import lombok.Builder;
 
 @Builder
 public record TransactionDTO(
-        @JsonProperty("entry_reference") String entryReference,
+        @JsonProperty("transaction_id") String transactionId,
         @JsonProperty("merchant_category_code") String merchantCategoryCode,
         @JsonProperty("transaction_amount") TransactionAmountDTO transactionAmount,
         @JsonProperty("creditor") TransactionPartyDTO creditor,
@@ -24,8 +24,6 @@ public record TransactionDTO(
         @JsonProperty("booking_date") LocalDate bookingDate,
         @JsonProperty("value_date") LocalDate valueDate,
         @JsonProperty("transaction_date") LocalDate transactionDate,
-        @JsonProperty("balance_after_transaction") TransactionAmountDTO balanceAfterTransaction,
-        @JsonProperty("reference_number") String referenceNumber,
         @JsonProperty("reference_number_schema") String referenceNumberSchema,
         @JsonProperty("remittance_information") List<String> remittanceInformation,
         @JsonProperty("debtor_account_additional_identification")
@@ -33,5 +31,4 @@ public record TransactionDTO(
         @JsonProperty("creditor_account_additional_identification")
                 TransactionAccountAdditionalIdentificationDTO creditorAccountAdditionalIdentification,
         @JsonProperty("exchange_rate") TransactionExchangeRateDTO exchangeRate,
-        @JsonProperty("note") String note,
-        @JsonProperty("transaction_id") String transactionId) {}
+        @JsonProperty("note") String note) {}

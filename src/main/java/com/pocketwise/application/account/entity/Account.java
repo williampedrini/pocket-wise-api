@@ -3,6 +3,7 @@ package com.pocketwise.application.account.entity;
 import static jakarta.persistence.GenerationType.IDENTITY;
 
 import java.time.LocalDateTime;
+import java.util.Collection;
 import java.util.UUID;
 
 import jakarta.persistence.*;
@@ -36,6 +37,9 @@ public class Account {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "session_id", nullable = false)
     private Session session;
+
+    @OneToMany(mappedBy = "account", fetch = FetchType.LAZY)
+    private Collection<Transaction> transactions;
 
     @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;

@@ -1,47 +1,91 @@
 package com.pocketwise.application.account.mapper;
 
-import java.util.Collection;
-import java.util.Optional;
+import static java.util.Optional.ofNullable;
+
+import java.math.BigDecimal;
+import java.util.Collections;
+import java.util.List;
 
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
+import org.mapstruct.Mappings;
+import org.mapstruct.Named;
 
 import com.pocketwise.application.account.dto.TransactionDTO;
-import com.pocketwise.application.account.dto.TransactionResponseDTO;
-import com.pocketwise.application.account.dto.TransactionWrapperDTO;
+import com.pocketwise.application.account.entity.Transaction;
 
-@Mapper(imports = {Optional.class})
+@Mapper(componentModel = "spring")
 public interface TransactionMapper {
 
     /**
-     * Maps a {@link TransactionWrapperDTO} from the Enable Banking API to a {@link TransactionResponseDTO}
-     * for the REST API response.
+     * Maps a {@link TransactionDTO} to a {@link Transaction} entity.
      *
-     * @param value the transaction value from the Enable Banking API; must not be null.
-     * @return a {@link TransactionResponseDTO} containing the transactions and pagination information.
+     * @param value the source DTO containing transaction data.
+     * @return the mapped {@link Transaction} entity.
      */
-    @Mapping(target = "transactions", source = "value.transactions")
-    @Mapping(
-            target = "hasMore",
-            expression =
-                    "java(Optional.ofNullable(value.continuation()).filter(continuation -> !continuation.isEmpty()).isPresent())")
-    @Mapping(target = "page", source = "value.continuation")
-    TransactionResponseDTO map(TransactionWrapperDTO value);
+    @Mappings({
+        @Mapping(target = "id", ignore = true),
+        @Mapping(target = "uuid", ignore = true),
+        @Mapping(target = "account", ignore = true),
+        @Mapping(target = "createdAt", ignore = true),
+        @Mapping(target = "amount", source = "value.transactionAmount.amount", qualifiedByName = "toDecimal"),
+        @Mapping(target = "currency", source = "value.transactionAmount.currency"),
+        @Mapping(target = "creditorName", source = "value.creditor.name"),
+        @Mapping(target = "creditorIban", source = "value.creditorAccount.iban"),
+        @Mapping(target = "debtorName", source = "value.debtor.name"),
+        @Mapping(target = "debtorIban", source = "value.debtorAccount.iban"),
+        @Mapping(target = "bankTransactionCode", source = "value.bankTransactionCode.code"),
+        @Mapping(target = "bankTransactionDescription", source = "value.bankTransactionCode.description"),
+        @Mapping(target = "remittanceInformation", source = "value.remittanceInformation", qualifiedByName = "joinList")
+    })
+    Transaction map(TransactionDTO value);
 
     /**
-     * Maps a collection of {@link TransactionDTO} objects to a {@link TransactionResponseDTO}
-     * with custom pagination information.
+     * Maps a {@link Transaction} entity to a {@link TransactionDTO}.
      *
-     * @param transactions the collection of transactions to include in the response.
-     * @param hasMore indicates whether more transactions are available.
-     * @param page the continuation key for the next page, or null if no more pages.
-     * @return a {@link TransactionResponseDTO} containing the transactions and pagination information.
+     * @param value the source entity.
+     * @return the mapped {@link TransactionDTO}.
      */
-    default TransactionResponseDTO map(Collection<TransactionDTO> transactions, boolean hasMore, String page) {
-        return TransactionResponseDTO.builder()
-                .transactions(transactions)
-                .hasMore(hasMore)
-                .page(page)
-                .build();
+    @Mappings({
+        @Mapping(target = "transactionAmount.amount", source = "value.amount"),
+        @Mapping(target = "transactionAmount.currency", source = "value.currency"),
+        @Mapping(target = "creditor.name", source = "value.creditorName"),
+        @Mapping(target = "creditorAccount.iban", source = "value.creditorIban"),
+        @Mapping(target = "debtor.name", source = "value.debtorName"),
+        @Mapping(target = "debtorAccount.iban", source = "value.debtorIban"),
+        @Mapping(target = "bankTransactionCode.code", source = "value.bankTransactionCode"),
+        @Mapping(target = "bankTransactionCode.description", source = "value.bankTransactionDescription"),
+        @Mapping(
+                target = "remittanceInformation",
+                source = "value.remittanceInformation",
+                qualifiedByName = "splitList"),
+        @Mapping(target = "creditor.postalAddress", ignore = true),
+        @Mapping(target = "debtor.postalAddress", ignore = true),
+        @Mapping(target = "creditorAgent", ignore = true),
+        @Mapping(target = "debtorAgent", ignore = true),
+        @Mapping(target = "bankTransactionCode.subCode", ignore = true),
+        @Mapping(target = "referenceNumberSchema", ignore = true),
+        @Mapping(target = "debtorAccountAdditionalIdentification", ignore = true),
+        @Mapping(target = "creditorAccountAdditionalIdentification", ignore = true),
+        @Mapping(target = "exchangeRate", ignore = true)
+    })
+    TransactionDTO map(Transaction value);
+
+    @Named("toDecimal")
+    default BigDecimal toDecimal(String value) {
+        return ofNullable(value).map(BigDecimal::new).orElse(BigDecimal.ZERO);
+    }
+
+    @Named("joinList")
+    default String joinList(List<String> values) {
+        return ofNullable(values).map(value -> String.join("; ", value)).orElse("");
+    }
+
+    @Named("splitList")
+    default List<String> splitList(String value) {
+        return ofNullable(value)
+                .filter(value1 -> !value1.isEmpty())
+                .map(value1 -> List.of(value1.split("; ")))
+                .orElse(Collections.emptyList());
     }
 }

@@ -35,6 +35,7 @@ public class AccountService {
     private final AccountMapper mapper;
     private final UserService userService;
     private final AccountRepository repository;
+    private final TransactionService transactionService;
     private final StringEncryptor encryptor;
 
     /**
@@ -112,15 +113,17 @@ public class AccountService {
 
     /**
      * Retrieves all transactions for the account associated with the provided UUID,
-     * automatically handling pagination to fetch all available transactions.
+     * automatically handling pagination to fetch all available transactions and persisting
+     * new transactions to the database.
      *
      * @param uuid the unique identifier used to search for the associated account; must not be null.
      * @param from the start date for filtering transactions in ISO 8601 format (YYYY-MM-DD); optional.
      * @param to the end date for filtering transactions in ISO 8601 format (YYYY-MM-DD); optional.
-     * @return a {@link TransactionResponseDTO} containing all transactions with hasMore set to false.
+     * @return a {@link Collection} containing all transactions.
      * @throws IllegalArgumentException if the account is not found, or if the provided UUID is null.
      */
     @Nonnull
+    @Transactional
     public Collection<TransactionDTO> findAllTransactionsByUuid(
             @Nonnull final UUID uuid, @Nullable final String from, @Nullable final String to) {
         Assert.notNull(uuid, "The UUID is mandatory.");
@@ -137,6 +140,7 @@ public class AccountService {
             continuation = wrapper.continuation();
         } while (isNotBlank(continuation));
 
+        transactionService.createAllIfNotExists(account, transactions);
         log.debug("Total transactions fetched for UUID {}: {}", uuid, transactions.size());
         return transactions;
     }

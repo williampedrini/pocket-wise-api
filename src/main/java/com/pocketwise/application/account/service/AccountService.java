@@ -10,6 +10,7 @@ import jakarta.annotation.Nonnull;
 import jakarta.annotation.Nullable;
 
 import org.jasypt.encryption.StringEncryptor;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
@@ -114,7 +115,7 @@ public class AccountService {
     /**
      * Retrieves all transactions for the account associated with the provided UUID,
      * automatically handling pagination to fetch all available transactions and persisting
-     * new transactions to the database.
+     * new transactions to the database. Results are cached using the free tier configuration.
      *
      * @param uuid the unique identifier used to search for the associated account; must not be null.
      * @param from the start date for filtering transactions in ISO 8601 format (YYYY-MM-DD); optional.
@@ -124,6 +125,9 @@ public class AccountService {
      */
     @Nonnull
     @Transactional
+    @Cacheable(
+            cacheNames = "#{@cacheProperties.transactions().free().name()}",
+            key = "#uuid.toString() + '-' + #from + '-' + #to")
     public Collection<TransactionDTO> findAllTransactionsByUuid(
             @Nonnull final UUID uuid, @Nullable final String from, @Nullable final String to) {
         Assert.notNull(uuid, "The UUID is mandatory.");
@@ -138,9 +142,9 @@ public class AccountService {
                     client.findAllTransactionsByAccountId(account.getUuid(), from, to, continuation);
             transactions.addAll(wrapper.transactions());
             continuation = wrapper.continuation();
+            transactionService.createAllIfNotExists(account, wrapper.transactions());
         } while (isNotBlank(continuation));
 
-        transactionService.createAllIfNotExists(account, transactions);
         log.debug("Total transactions fetched for UUID {}: {}", uuid, transactions.size());
         return transactions;
     }

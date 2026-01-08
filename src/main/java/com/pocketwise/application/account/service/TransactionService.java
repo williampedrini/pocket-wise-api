@@ -1,7 +1,6 @@
 package com.pocketwise.application.account.service;
 
 import java.util.Collection;
-import java.util.UUID;
 
 import jakarta.annotation.Nonnull;
 
@@ -54,19 +53,5 @@ public class TransactionService {
         Assert.notNull(account, "The account is mandatory.");
         Assert.notNull(transactions, "The transactions collection is mandatory.");
         transactions.forEach(transaction -> createIfNotExists(account, transaction));
-    }
-
-    /**
-     * Retrieves all transactions for the given account UUID.
-     *
-     * @param accountUuid the UUID of the account; must not be null.
-     * @return a collection of transaction DTOs.
-     */
-    @Nonnull
-    public Collection<TransactionDTO> findAllByAccountUuid(@Nonnull final UUID accountUuid) {
-        Assert.notNull(accountUuid, "The account UUID is mandatory.");
-        return repository.findAllByAccountUuid(accountUuid).stream()
-                .map(mapper::map)
-                .toList();
     }
 }

@@ -12,6 +12,8 @@ import org.springframework.validation.annotation.Validated;
 @ConfigurationProperties(prefix = "cache")
 public record CacheProperties(
         @NotBlank(message = "Cache instance name must not be blank") String instanceName,
+        @NotNull(message = "Accounts cache configuration is required") @Valid TierConfig accounts,
+        @NotNull(message = "Balances cache configuration is required") @Valid TierConfig balances,
         @NotNull(message = "Transaction cache configuration is required") @Valid TransactionCache transactions) {
 
     public record TransactionCache(

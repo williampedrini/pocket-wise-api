@@ -46,6 +46,7 @@ public class AccountService {
      *         an empty collection is returned if no accounts are found.
      */
     @Nonnull
+    @Cacheable(cacheNames = "#{@cacheProperties.accounts().name()}", key = "@userService.getSessionUser().email()")
     public Collection<AccountDTO> findAllBySessionUser() {
         final String encryptedEmail =
                 encryptor.encrypt(userService.getSessionUser().email());
@@ -84,6 +85,7 @@ public class AccountService {
      * @throws IllegalArgumentException if the account is not found, or if the provided UUID is null.
      */
     @Nonnull
+    @Cacheable(cacheNames = "#{@cacheProperties.balances().name()}", key = "#uuid.toString()")
     public Collection<AccountBalanceDTO> findAllBalancesByUuid(@Nonnull final UUID uuid) {
         Assert.notNull(uuid, "The UUID is mandatory.");
         final Account account = repository.findByUuid(uuid).orElseThrow(() -> {

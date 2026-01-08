@@ -24,11 +24,15 @@ class HazelcastConfiguration {
 
     @Bean
     Config config() {
+        final TierConfig accounts = properties.accounts();
+        final TierConfig balances = properties.balances();
         final TierConfig free = properties.transactions().free();
         final TierConfig premium = properties.transactions().premium();
 
         return new Config()
                 .setInstanceName(properties.instanceName())
+                .addMapConfig(createMapConfig(accounts.name(), accounts.ttlHours()))
+                .addMapConfig(createMapConfig(balances.name(), balances.ttlHours()))
                 .addMapConfig(createMapConfig(free.name(), free.ttlHours()))
                 .addMapConfig(createMapConfig(premium.name(), premium.ttlHours()));
     }

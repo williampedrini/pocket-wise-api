@@ -21,6 +21,25 @@ spring:
   cache:
     # remove this property for the cache to work.
     type: none
+# Uncomment this line to use caching
+#  cache:
+#    instanceName: pocketWiseCache
+#    accounts:
+#      name: accounts
+#      ttlHours: 1
+#    balances:
+#      name: balances
+#      ttlHours: 1
+#    transactions:
+#      free:
+#        name: transactionsFree
+#        ttlHours: 24
+#      premium:
+#        name: transactionsPremium
+#        ttlHours: 1
+#    countries:
+#      name: countries
+
 
 springdoc:
   api-docs:

@@ -3,6 +3,7 @@ package com.pocketwise.application.security.dto;
 import java.util.UUID;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.pocketwise.application.aspsp.dto.AspspDTO;
 
 import lombok.Builder;
 

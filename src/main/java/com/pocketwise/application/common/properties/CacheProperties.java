@@ -14,7 +14,8 @@ public record CacheProperties(
         @NotBlank(message = "Cache instance name must not be blank") String instanceName,
         @NotNull(message = "Accounts cache configuration is required") @Valid TierConfig accounts,
         @NotNull(message = "Balances cache configuration is required") @Valid TierConfig balances,
-        @NotNull(message = "Transaction cache configuration is required") @Valid TransactionCache transactions) {
+        @NotNull(message = "Transaction cache configuration is required") @Valid TransactionCache transactions,
+        @NotNull(message = "Countries cache configuration is required") @Valid PersistentCacheConfig countries) {
 
     public record TransactionCache(
             @NotNull(message = "Free tier configuration is required") @Valid TierConfig free,
@@ -24,4 +25,6 @@ public record CacheProperties(
             @NotBlank(message = "Cache name must not be blank") String name,
             @NotNull(message = "TTL hours must not be null") @Min(value = 1, message = "TTL must be at least 1 hour")
                     Integer ttlHours) {}
+
+    public record PersistentCacheConfig(@NotBlank(message = "Cache name must not be blank") String name) {}
 }

@@ -1,14 +1,14 @@
-package com.pocketwise.application.security.mapper;
+package com.pocketwise.application.aspsp.mapper;
 
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.Mappings;
 
-import com.pocketwise.application.security.dto.AspspDTO;
+import com.pocketwise.application.aspsp.dto.AspspDTO;
 import com.pocketwise.application.security.dto.AuthorizationDTO;
 
 @Mapper
-interface AspspMapper {
+public interface AspspMapper {
 
     /**
      * Maps an {@link AuthorizationDTO} to an {@link AspspDTO}.

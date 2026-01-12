@@ -9,6 +9,7 @@ import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.Mappings;
 
+import com.pocketwise.application.aspsp.mapper.AspspMapper;
 import com.pocketwise.application.security.dto.AuthorizationDTO;
 import com.pocketwise.application.security.dto.AuthorizationRequestAccessDTO;
 import com.pocketwise.application.security.dto.AuthorizationRequestDTO;

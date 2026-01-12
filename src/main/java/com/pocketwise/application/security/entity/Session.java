@@ -9,7 +9,6 @@ import java.util.UUID;
 import jakarta.persistence.*;
 
 import com.pocketwise.application.account.entity.Account;
-import com.pocketwise.application.common.converter.EncryptedStringConverter;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -30,7 +29,6 @@ public class Session {
     @Column(name = "UUID", unique = true, nullable = false)
     private UUID uuid;
 
-    @Convert(converter = EncryptedStringConverter.class)
     @Column(name = "EMAIL", nullable = false)
     private String email;
 

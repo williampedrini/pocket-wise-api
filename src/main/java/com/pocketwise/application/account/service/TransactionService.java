@@ -1,5 +1,7 @@
 package com.pocketwise.application.account.service;
 
+import static org.apache.commons.lang3.StringUtils.isBlank;
+
 import java.util.Collection;
 
 import jakarta.annotation.Nonnull;
@@ -33,7 +35,7 @@ public class TransactionService {
     public void createIfNotExists(@Nonnull final Account account, @Nonnull final TransactionDTO transaction) {
         Assert.notNull(account, "The account is mandatory.");
         Assert.notNull(transaction, "The transaction is mandatory.");
-        if (repository.existsByTransactionId(transaction.transactionId())) {
+        if (isBlank(transaction.transactionId()) || repository.existsByTransactionId(transaction.transactionId())) {
             return;
         }
         final Transaction entity = mapper.map(transaction);

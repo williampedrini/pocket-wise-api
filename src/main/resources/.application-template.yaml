@@ -18,6 +18,9 @@ spring:
             client-id: ENC(htPMUg6NBklG66yO1PRPG7jI4YNP4Fa7mWDA9P6ItTFvm0l3jnYixhcbKmMq2sniGDHodfExfGcsL9gjNEN0iPd7iB085jpi6cCbgVKQcSnA30DL9669q8MWrC3DGruGD+iXJH/iwvFHyUYRqKsSMA==)
             client-secret: ENC(mEdXmzYDF7mPtbmVwFKi8YaeiHkI4RQXE7iE419xoLWHorTaMY/+DuvBmQXh4lHFCmxr7rqr4irzg1BoeSGcc58Sq6Q90poVDnj0uEJNcgo=)
             scope: openid, profile, email
+  cache:
+    # remove this property for the cache to work.
+    type: none
 
 springdoc:
   api-docs:

@@ -9,7 +9,6 @@ import java.util.UUID;
 import jakarta.annotation.Nonnull;
 import jakarta.annotation.Nullable;
 
-import org.jasypt.encryption.StringEncryptor;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -37,7 +36,6 @@ public class AccountService {
     private final UserService userService;
     private final AccountRepository repository;
     private final TransactionService transactionService;
-    private final StringEncryptor encryptor;
 
     /**
      * Retrieves all accounts associated with the current session user.
@@ -48,11 +46,8 @@ public class AccountService {
     @Nonnull
     @Cacheable(cacheNames = "#{@cacheProperties.accounts().name()}", key = "@userService.getSessionUser().email()")
     public Collection<AccountDTO> findAllBySessionUser() {
-        final String encryptedEmail =
-                encryptor.encrypt(userService.getSessionUser().email());
-        return repository.findAllBySessionEmail(encryptedEmail).stream()
-                .map(mapper::map)
-                .toList();
+        final String email = userService.getSessionUser().email();
+        return repository.findAllBySessionEmail(email).stream().map(mapper::map).toList();
     }
 
     /**

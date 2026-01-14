@@ -5,7 +5,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Builder;
 
 @Builder
-public record TransactionBankCodeDTO(
+public record EnableBankingTransactionBankCodeDTO(
         @JsonProperty("description") String description,
         @JsonProperty("code") String code,
         @JsonProperty("sub_code") String subCode) {}

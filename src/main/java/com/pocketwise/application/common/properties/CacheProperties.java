@@ -15,7 +15,7 @@ public record CacheProperties(
         @NotNull(message = "Accounts cache configuration is required") @Valid TierConfig accounts,
         @NotNull(message = "Balances cache configuration is required") @Valid TierConfig balances,
         @NotNull(message = "Transaction cache configuration is required") @Valid TransactionCache transactions,
-        @NotNull(message = "Countries cache configuration is required") @Valid PersistentCacheConfig countries) {
+        @NotNull(message = "ASPSPs cache configuration is required") @Valid PersistentCacheConfig aspsps) {
 
     public record TransactionCache(
             @NotNull(message = "Free tier configuration is required") @Valid TierConfig free,

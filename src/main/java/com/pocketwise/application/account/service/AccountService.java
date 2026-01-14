@@ -8,8 +8,11 @@ import java.util.UUID;
 
 import jakarta.annotation.Nonnull;
 import jakarta.annotation.Nullable;
+import jakarta.persistence.EntityNotFoundException;
 
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
@@ -18,6 +21,7 @@ import com.pocketwise.application.account.client.AccountClient;
 import com.pocketwise.application.account.dto.*;
 import com.pocketwise.application.account.entity.Account;
 import com.pocketwise.application.account.mapper.AccountMapper;
+import com.pocketwise.application.account.mapper.TransactionMapper;
 import com.pocketwise.application.account.repository.AccountRepository;
 import com.pocketwise.application.security.dto.UserDTO;
 import com.pocketwise.application.security.entity.Session;
@@ -32,7 +36,8 @@ import lombok.extern.slf4j.Slf4j;
 public class AccountService {
 
     private final AccountClient client;
-    private final AccountMapper mapper;
+    private final AccountMapper accountMapper;
+    private final TransactionMapper transactionMapper;
     private final UserService userService;
     private final AccountRepository repository;
     private final TransactionService transactionService;
@@ -47,18 +52,20 @@ public class AccountService {
     @Cacheable(cacheNames = "#{@cacheProperties.accounts().name()}", key = "@userService.getSessionUser().email()")
     public Collection<AccountDTO> findAllBySessionUser() {
         final String email = userService.getSessionUser().email();
-        return repository.findAllBySessionEmail(email).stream().map(mapper::map).toList();
+        return repository.findAllBySessionEmail(email).stream()
+                .map(accountMapper::map)
+                .toList();
     }
 
     /**
      * Retrieves the account information corresponding to the provided UUID.
      *
      * @param uuid the unique identifier used to search for the account; must not be null.
-     * @return an {@link AccountDTO} containing the account information associated with the given UUID.
+     * @return an {@link EnableBankingAccountDTO} containing the account information associated with the given UUID.
      * @throws IllegalArgumentException if the account is not found, or if the provided UUID is null.
      */
     @Nonnull
-    public AccountDTO findByUuid(@Nonnull final UUID uuid) {
+    public EnableBankingAccountDTO findByUuid(@Nonnull final UUID uuid) {
         Assert.notNull(uuid, "The UUID is mandatory.");
         final Account account = repository.findByUuid(uuid).orElseThrow(() -> {
             final String message = String.format("The account is not found for %s", uuid);
@@ -69,14 +76,14 @@ public class AccountService {
             return client.findById(account.getUuid());
         }
         final String message = "The session user is not allowed to access this account.";
-        throw new IllegalStateException(message);
+        throw new AccessDeniedException(message);
     }
 
     /**
      * Retrieves all account balances associated with the account linked to the provided UUID.
      *
      * @param uuid the unique identifier used to search for the associated account; must not be null.
-     * @return an {@link AccountBalanceWrapperDTO} containing all balances related to the account associated with the given UUID.
+     * @return a {@link Collection} of {@link AccountBalanceDTO} containing all balances related to the account associated with the given UUID.
      * @throws IllegalArgumentException if the account is not found, or if the provided UUID is null.
      */
     @Nonnull
@@ -89,10 +96,12 @@ public class AccountService {
         });
         final UserDTO sessionUser = userService.getSessionUser();
         if (sessionUser.email().equalsIgnoreCase(account.getSession().getEmail())) {
-            return client.findAllBalancesByAccountId(account.getUuid()).balances();
+            return client.findAllBalancesByAccountId(account.getUuid()).balances().stream()
+                    .map(accountMapper::map)
+                    .toList();
         }
         final String message = "The session user is not allowed to access this account.";
-        throw new IllegalStateException(message);
+        throw new AccessDeniedException(message);
     }
 
     /**
@@ -101,12 +110,36 @@ public class AccountService {
      * @param account the account data transfer object to be created; must not be null.
      */
     @Transactional
-    public void create(@Nonnull final Session session, @Nonnull final AccountDTO account) {
+    @CacheEvict(cacheNames = "#{@cacheProperties.accounts().name()}", key = "#session.email")
+    public void create(@Nonnull final Session session, @Nonnull final EnableBankingAccountDTO account) {
         Assert.notNull(session, "The session is mandatory");
         Assert.notNull(account, "The account is mandatory");
-        final Account entity = repository.findByUuid(account.uid()).orElseGet(() -> mapper.map(account));
+        final String iban = account.accountId().iban();
+        final Account entity = repository.findByIban(iban).orElseGet(() -> accountMapper.map(account));
         entity.setSession(session);
         repository.save(entity);
+    }
+
+    /**
+     * Deletes the account associated with the provided UUID.
+     *
+     * @param uuid the unique identifier of the account to delete; must not be null.
+     * @throws EntityNotFoundException if the account is not found.
+     * @throws AccessDeniedException if the session user is not allowed to delete this account.
+     */
+    @Transactional
+    @CacheEvict(cacheNames = "#{@cacheProperties.accounts().name()}", key = "@userService.getSessionUser().email()")
+    public void deleteByUuid(@Nonnull final UUID uuid) {
+        Assert.notNull(uuid, "The UUID is mandatory.");
+        final Account account = repository.findByUuid(uuid).orElseThrow(() -> {
+            final String message = String.format("The account is not found for %s", uuid);
+            return new EntityNotFoundException(message);
+        });
+        final UserDTO sessionUser = userService.getSessionUser();
+        if (!sessionUser.email().equalsIgnoreCase(account.getSession().getEmail())) {
+            throw new AccessDeniedException("The session user is not allowed to delete this account.");
+        }
+        repository.deleteByUuid(uuid);
     }
 
     /**
@@ -131,11 +164,11 @@ public class AccountService {
         log.debug("Fetching all transactions (with auto-pagination) for UUID: {}, from: {}, to: {}", uuid, from, to);
 
         final Account account = findAccountByUuid(uuid);
-        final Collection<TransactionDTO> transactions = new ArrayList<>();
+        final Collection<EnableBankingTransactionDTO> transactions = new ArrayList<>();
         String continuation = null;
 
         do {
-            final TransactionWrapperDTO wrapper =
+            final EnableBankingTransactionWrapperDTO wrapper =
                     client.findAllTransactionsByAccountId(account.getUuid(), from, to, continuation);
             transactions.addAll(wrapper.transactions());
             continuation = wrapper.continuation();
@@ -143,7 +176,9 @@ public class AccountService {
         } while (isNotBlank(continuation));
 
         log.debug("Total transactions fetched for UUID {}: {}", uuid, transactions.size());
-        return transactions;
+        return transactions.stream()
+                .map(transaction -> transactionMapper.map(transaction, TransactionDTO.class))
+                .toList();
     }
 
     /**

@@ -7,7 +7,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Builder;
 
 @Builder
-public record TransactionPostalAddressDTO(
+public record EnableBankingTransactionPostalAddressDTO(
         @JsonProperty("address_line") List<String> addressLine,
         @JsonProperty("address_type") String addressType,
         @JsonProperty("building_number") String buildingNumber,

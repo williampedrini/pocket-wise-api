@@ -4,17 +4,22 @@ import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.Mappings;
 
+import com.pocketwise.application.account.dto.AccountBalanceAmountDTO;
+import com.pocketwise.application.account.dto.AccountBalanceDTO;
 import com.pocketwise.application.account.dto.AccountDTO;
+import com.pocketwise.application.account.dto.EnableBankingAccountBalanceAmountDTO;
+import com.pocketwise.application.account.dto.EnableBankingAccountBalanceDTO;
+import com.pocketwise.application.account.dto.EnableBankingAccountDTO;
 import com.pocketwise.application.account.entity.Account;
 
 @Mapper
 public interface AccountMapper {
 
     /**
-     * Maps an {@link AccountDTO} object to an {@link Account} entity. The method performs field-level
+     * Maps an {@link EnableBankingAccountDTO} object to an {@link Account} entity. The method performs field-level
      * transformations as defined in the mapping annotations to align the structure of the DTO with the entity.
      *
-     * @param value the {@link AccountDTO} object containing the source data to be mapped; must not be null.
+     * @param value the {@link EnableBankingAccountDTO} object containing the source data to be mapped; must not be null.
      * @return the mapped {@link Account} entity.
      */
     @Mappings({
@@ -22,7 +27,7 @@ public interface AccountMapper {
         @Mapping(target = "uuid", source = "value.uid"),
         @Mapping(target = "iban", source = "value.accountId.iban"),
     })
-    Account map(AccountDTO value);
+    Account map(EnableBankingAccountDTO value);
 
     /**
      * Maps an {@link Account} entity to an {@link AccountDTO}. This method transforms an {@link Account}
@@ -37,4 +42,20 @@ public interface AccountMapper {
         @Mapping(target = "uid", source = "value.uuid"),
     })
     AccountDTO map(Account value);
+
+    /**
+     * Maps an {@link EnableBankingAccountBalanceDTO} object to an {@link AccountBalanceDTO}.
+     *
+     * @param value the {@link EnableBankingAccountBalanceDTO} object containing the source data to be mapped; must not be null.
+     * @return the mapped {@link AccountBalanceDTO}.
+     */
+    AccountBalanceDTO map(EnableBankingAccountBalanceDTO value);
+
+    /**
+     * Maps an {@link EnableBankingAccountBalanceAmountDTO} object to an {@link AccountBalanceAmountDTO}.
+     *
+     * @param value the {@link EnableBankingAccountBalanceAmountDTO} object containing the source data to be mapped; must not be null.
+     * @return the mapped {@link AccountBalanceAmountDTO}.
+     */
+    AccountBalanceAmountDTO map(EnableBankingAccountBalanceAmountDTO value);
 }

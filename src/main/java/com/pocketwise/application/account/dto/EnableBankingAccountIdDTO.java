@@ -4,4 +4,4 @@ import java.io.Serializable;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-public record AccountIdDTO(@JsonProperty("iban") String iban) implements Serializable {}
+public record EnableBankingAccountIdDTO(@JsonProperty("iban") String iban) implements Serializable {}

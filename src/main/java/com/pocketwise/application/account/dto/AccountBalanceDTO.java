@@ -1,8 +1,6 @@
 package com.pocketwise.application.account.dto;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
+import java.io.Serializable;
 
-public record AccountBalanceDTO(
-        @JsonProperty("name") String name,
-        @JsonProperty("balance_amount") AccountBalanceAmountDTO balanceAmount,
-        @JsonProperty("balance_type") String balanceType) {}
+public record AccountBalanceDTO(String name, AccountBalanceAmountDTO balanceAmount, String balanceType)
+        implements Serializable {}

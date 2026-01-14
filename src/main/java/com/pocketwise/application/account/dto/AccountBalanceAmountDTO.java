@@ -1,8 +1,6 @@
 package com.pocketwise.application.account.dto;
 
+import java.io.Serializable;
 import java.math.BigDecimal;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
-
-public record AccountBalanceAmountDTO(
-        @JsonProperty("currency") String currency, @JsonProperty("amount") BigDecimal amount) {}
+public record AccountBalanceAmountDTO(String currency, BigDecimal amount) implements Serializable {}

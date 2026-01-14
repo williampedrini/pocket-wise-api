@@ -4,20 +4,20 @@ import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.Mappings;
 
-import com.pocketwise.application.security.dto.AuthorizationRequestDTO;
+import com.pocketwise.application.security.dto.EnableBankingAuthorizationRequestDTO;
 import com.pocketwise.application.security.entity.Session;
 
-@Mapper(componentModel = "spring")
+@Mapper
 public interface SessionMapper {
 
     /**
-     * Maps an {@link AuthorizationRequestDTO} to a {@link Session}.
+     * Maps an {@link EnableBankingAuthorizationRequestDTO} to a {@link Session}.
      * The method assigns the request state to the target session's `uuid` field
      * and populates the `email` field from the current session user, resolved via the Spring context
      * without requiring the caller to pass a {@link com.pocketwise.application.security.service.UserService}.
      *
-     * @param value the source {@link AuthorizationRequestDTO} containing authorization data
-     * @return a {@link Session} entity populated with the data from the provided {@link AuthorizationRequestDTO}
+     * @param value the source {@link EnableBankingAuthorizationRequestDTO} containing authorization data
+     * @return a {@link Session} entity populated with the data from the provided {@link EnableBankingAuthorizationRequestDTO}
      */
     @Mappings({
         @Mapping(target = "uuid", source = "value.state"),
@@ -26,5 +26,5 @@ public interface SessionMapper {
                 expression =
                         "java(com.pocketwise.application.common.configuration.SpringContext.getBean(com.pocketwise.application.security.service.UserService.class).getSessionUser().email())")
     })
-    Session map(AuthorizationRequestDTO value);
+    Session map(EnableBankingAuthorizationRequestDTO value);
 }

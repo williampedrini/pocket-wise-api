@@ -3,23 +3,18 @@ package com.pocketwise.application.common.converter;
 import jakarta.persistence.AttributeConverter;
 import jakarta.persistence.Converter;
 
-import org.jasypt.encryption.StringEncryptor;
-
 import com.pocketwise.application.common.configuration.SpringContext;
+import com.pocketwise.application.common.service.EncryptionService;
 
 @Converter
 public class EncryptedStringConverter implements AttributeConverter<String, String> {
-
-    private StringEncryptor getEncryptor() {
-        return SpringContext.getBean(StringEncryptor.class);
-    }
 
     @Override
     public String convertToDatabaseColumn(final String value) {
         if (value == null) {
             return null;
         }
-        return getEncryptor().encrypt(value);
+        return getEncryptionService().encrypt(value);
     }
 
     @Override
@@ -27,6 +22,10 @@ public class EncryptedStringConverter implements AttributeConverter<String, Stri
         if (value == null) {
             return null;
         }
-        return getEncryptor().decrypt(value);
+        return getEncryptionService().decrypt(value);
+    }
+
+    private EncryptionService getEncryptionService() {
+        return SpringContext.getBean(EncryptionService.class);
     }
 }

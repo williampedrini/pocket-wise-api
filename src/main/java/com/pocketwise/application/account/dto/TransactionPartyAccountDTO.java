@@ -1,8 +1,5 @@
 package com.pocketwise.application.account.dto;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
+import java.io.Serializable;
 
-import lombok.Builder;
-
-@Builder
-public record TransactionPartyAccountDTO(@JsonProperty("iban") String iban) {}
+public record TransactionPartyAccountDTO(String iban) implements Serializable {}

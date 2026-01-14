@@ -12,7 +12,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
 
-import com.pocketwise.application.account.dto.AccountDTO;
+import com.pocketwise.application.account.dto.EnableBankingAccountDTO;
 import com.pocketwise.application.account.service.AccountService;
 import com.pocketwise.application.security.client.AuthorizationClient;
 import com.pocketwise.application.security.client.SessionClient;
@@ -65,8 +65,8 @@ public class AuthorizationService {
     @Transactional
     public String authorize(@Nonnull final AuthorizationDTO authorization) {
         Assert.notNull(authorization, "The authorization is mandatory");
-        final AuthorizationRequestDTO request = authorizationMapper.map(authorization, callbackUrl);
-        final AuthorizationResponseDTO response = accountClient.authorize(request);
+        final EnableBankingAuthorizationRequestDTO request = authorizationMapper.map(authorization, callbackUrl);
+        final EnableBankingAuthorizationResponseDTO response = accountClient.authorize(request);
         final Session session = sessionMapper.map(request);
         sessionRepository.save(session);
         return response.url();
@@ -89,12 +89,12 @@ public class AuthorizationService {
                             .formatted(authentication.state());
                     return new IllegalStateException(message);
                 });
-        final AuthenticationRequestDTO request = authenticationMapper.map(authentication);
-        final CreateSessionResponseDTO response = sessionClient.create(request);
+        final EnableBankingAuthenticationRequestDTO request = authenticationMapper.map(authentication);
+        final EnableBankingCreateSessionResponseDTO response = sessionClient.create(request);
         session.setToken(response.sessionId());
         sessionRepository.save(session);
 
-        requireNonNullElse(response.accounts(), new ArrayList<AccountDTO>())
+        requireNonNullElse(response.accounts(), new ArrayList<EnableBankingAccountDTO>())
                 .forEach((account) -> accountService.create(session, account));
     }
 }

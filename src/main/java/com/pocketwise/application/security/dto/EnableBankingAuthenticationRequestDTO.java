@@ -7,4 +7,4 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Builder;
 
 @Builder
-public record AuthenticationRequestDTO(@JsonProperty("code") UUID code) {}
+public record EnableBankingAuthenticationRequestDTO(@JsonProperty("code") UUID code) {}

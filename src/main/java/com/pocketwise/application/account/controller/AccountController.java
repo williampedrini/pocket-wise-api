@@ -1,17 +1,16 @@
 package com.pocketwise.application.account.controller;
 
+import static org.springframework.http.HttpStatus.NO_CONTENT;
+
 import java.util.Collection;
 import java.util.UUID;
 
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import com.pocketwise.application.account.dto.AccountBalanceDTO;
 import com.pocketwise.application.account.dto.AccountDTO;
+import com.pocketwise.application.account.dto.EnableBankingAccountDTO;
 import com.pocketwise.application.account.dto.TransactionDTO;
 import com.pocketwise.application.account.service.AccountService;
 
@@ -53,7 +52,8 @@ class AccountController {
         @ApiResponse(responseCode = "404", description = "Account not found"),
         @ApiResponse(responseCode = "500", description = "Internal server error")
     })
-    AccountDTO findByUuid(@Parameter(description = "Account UUID", required = true) @PathVariable UUID uuid) {
+    EnableBankingAccountDTO findByUuid(
+            @Parameter(description = "Account UUID", required = true) @PathVariable UUID uuid) {
         return service.findByUuid(uuid);
     }
 
@@ -92,5 +92,18 @@ class AccountController {
                     @RequestParam(required = false)
                     String to) {
         return service.findAllTransactionsByUuid(uuid, from, to);
+    }
+
+    @DeleteMapping("/{uuid}")
+    @ResponseStatus(NO_CONTENT)
+    @Operation(summary = "Delete account by UUID", description = "Deletes the account for the given account UUID.")
+    @ApiResponses({
+        @ApiResponse(responseCode = "204", description = "Account deleted"),
+        @ApiResponse(responseCode = "403", description = "Access denied"),
+        @ApiResponse(responseCode = "404", description = "Account not found"),
+        @ApiResponse(responseCode = "500", description = "Internal server error")
+    })
+    void deleteByUuid(@Parameter(description = "Account UUID", required = true) @PathVariable UUID uuid) {
+        service.deleteByUuid(uuid);
     }
 }

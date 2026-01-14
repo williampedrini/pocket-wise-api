@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.pocketwise.application.aspsp.dto.AspspDTO;
+import com.pocketwise.application.aspsp.dto.EnableBankingAspspDTO;
 import com.pocketwise.application.aspsp.service.AspspService;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -34,7 +34,7 @@ class AspspController {
         @ApiResponse(responseCode = "200", description = "ASPSPs retrieved"),
         @ApiResponse(responseCode = "500", description = "Internal server error")
     })
-    Map<String, List<AspspDTO>> findAll() {
+    Map<String, List<EnableBankingAspspDTO>> findAll() {
         return service.findAll();
     }
 }

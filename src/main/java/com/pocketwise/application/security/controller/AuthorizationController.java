@@ -36,11 +36,11 @@ class AuthorizationController {
             description =
                     "Handles the redirection from bank with the authorization code and exchanges it for access tokens.")
     @ApiResponses({
-        @ApiResponse(responseCode = "200", description = "Callback processed"),
+        @ApiResponse(responseCode = "302", description = "Redirect to app"),
         @ApiResponse(responseCode = "400", description = "Missing or invalid code"),
         @ApiResponse(responseCode = "500", description = "Internal server error")
     })
-    void handleCallback(
+    RedirectView handleCallback(
             @Parameter(description = "Authorization code returned by bank")
                     @RequestParam(name = "code", required = false)
                     UUID code,
@@ -50,6 +50,7 @@ class AuthorizationController {
         final AuthenticationDTO payload =
                 AuthenticationDTO.builder().code(code).state(state).build();
         service.authenticate(payload);
+        return new RedirectView("pocketwise://callback?status=success");
     }
 
     @GetMapping
@@ -62,7 +63,7 @@ class AuthorizationController {
         @ApiResponse(responseCode = "500", description = "Internal server error")
     })
     @PreAuthorize("isAuthenticated()")
-    RedirectView authorize(
+    String authorize(
             @Parameter(description = "Bank identifier (e.g., bank slug)", required = true) @RequestParam
                     final String bank,
             @Parameter(description = "Country code in ISO 3166-1 alpha-2 format", required = true) @RequestParam
@@ -70,7 +71,6 @@ class AuthorizationController {
         log.info("User requesting to connect bank: {} ({})", bank, country);
         final AuthorizationDTO authorization =
                 AuthorizationDTO.builder().bank(bank).country(country).build();
-        final String redirectUrl = service.authorize(authorization);
-        return new RedirectView(redirectUrl);
+        return service.authorize(authorization);
     }
 }

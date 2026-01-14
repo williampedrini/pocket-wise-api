@@ -5,9 +5,9 @@ import java.util.UUID;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-public record AccountDTO(
-        @JsonProperty("account_id") AccountIdDTO accountId,
-        @JsonProperty("account_servicer") AccountServicerDTO accountServicer,
+public record EnableBankingAccountDTO(
+        @JsonProperty("account_id") EnableBankingAccountIdDTO accountId,
+        @JsonProperty("account_servicer") EnableBankingAccountServicerDTO accountServicer,
         @JsonProperty("name") String name,
         @JsonProperty("details") String details,
         @JsonProperty("usage") String usage,

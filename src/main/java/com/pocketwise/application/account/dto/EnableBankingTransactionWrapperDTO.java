@@ -12,12 +12,12 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Builder;
 
 @Builder
-public record TransactionWrapperDTO(
-        @JsonProperty("transactions") Collection<TransactionDTO> transactions,
+public record EnableBankingTransactionWrapperDTO(
+        @JsonProperty("transactions") Collection<EnableBankingTransactionDTO> transactions,
         @JsonProperty("continuation_key") String continuation) {
 
     @Nonnull
-    public Collection<TransactionDTO> transactions() {
+    public Collection<EnableBankingTransactionDTO> transactions() {
         return requireNonNullElse(transactions, new ArrayList<>());
     }
 }

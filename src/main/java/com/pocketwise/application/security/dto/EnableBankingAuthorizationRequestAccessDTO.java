@@ -7,8 +7,8 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Builder;
 
 @Builder
-public record AuthorizationRequestAccessDTO(
+public record EnableBankingAuthorizationRequestAccessDTO(
         @JsonProperty("balances") boolean balances,
         @JsonProperty("transactions") boolean transactions,
         @JsonProperty("valid_until") String validUntil,
-        @JsonProperty("accounts") Collection<AuthorizationRequestAccountDTO> accounts) {}
+        @JsonProperty("accounts") Collection<EnableBankingAuthorizationRequestAccountDTO> accounts) {}

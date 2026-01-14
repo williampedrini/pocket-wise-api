@@ -29,7 +29,7 @@ class HazelcastConfiguration {
         final TierConfig balances = properties.balances();
         final TierConfig free = properties.transactions().free();
         final TierConfig premium = properties.transactions().premium();
-        final PersistentCacheConfig countries = properties.countries();
+        final PersistentCacheConfig aspsps = properties.aspsps();
 
         return new Config()
                 .setInstanceName(properties.instanceName())
@@ -37,7 +37,7 @@ class HazelcastConfiguration {
                 .addMapConfig(createMapConfig(balances.name(), balances.ttlHours()))
                 .addMapConfig(createMapConfig(free.name(), free.ttlHours()))
                 .addMapConfig(createMapConfig(premium.name(), premium.ttlHours()))
-                .addMapConfig(createPersistentMapConfig(countries.name()));
+                .addMapConfig(createPersistentMapConfig(aspsps.name()));
     }
 
     private MapConfig createMapConfig(String name, int ttlHours) {

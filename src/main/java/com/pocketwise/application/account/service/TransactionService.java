@@ -10,7 +10,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
 
-import com.pocketwise.application.account.dto.TransactionDTO;
+import com.pocketwise.application.account.dto.EnableBankingTransactionDTO;
 import com.pocketwise.application.account.entity.Account;
 import com.pocketwise.application.account.entity.Transaction;
 import com.pocketwise.application.account.mapper.TransactionMapper;
@@ -32,7 +32,8 @@ public class TransactionService {
      * @param transaction the transaction DTO to persist; must not be null.
      */
     @Transactional
-    public void createIfNotExists(@Nonnull final Account account, @Nonnull final TransactionDTO transaction) {
+    public void createIfNotExists(
+            @Nonnull final Account account, @Nonnull final EnableBankingTransactionDTO transaction) {
         Assert.notNull(account, "The account is mandatory.");
         Assert.notNull(transaction, "The transaction is mandatory.");
         if (isBlank(transaction.transactionId()) || repository.existsByTransactionId(transaction.transactionId())) {
@@ -51,7 +52,7 @@ public class TransactionService {
      */
     @Transactional
     public void createAllIfNotExists(
-            @Nonnull final Account account, @Nonnull final Collection<TransactionDTO> transactions) {
+            @Nonnull final Account account, @Nonnull final Collection<EnableBankingTransactionDTO> transactions) {
         Assert.notNull(account, "The account is mandatory.");
         Assert.notNull(transactions, "The transactions collection is mandatory.");
         transactions.forEach(transaction -> createIfNotExists(account, transaction));

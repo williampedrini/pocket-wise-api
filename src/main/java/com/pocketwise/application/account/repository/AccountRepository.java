@@ -27,4 +27,20 @@ public interface AccountRepository extends JpaRepository<Account, Long> {
      *         an empty collection is returned if no accounts are found.
      */
     Collection<Account> findAllBySessionEmail(String email);
+
+    /**
+     * Retrieves the account associated with the provided IBAN.
+     *
+     * @param iban the IBAN of the account to search for; must not be null.
+     * @return an {@link Optional} containing the {@link Account} associated with the given IBAN,
+     *         or an empty {@link Optional} if no such account exists.
+     */
+    Optional<Account> findByIban(String iban);
+
+    /**
+     * Deletes the account associated with the provided UUID.
+     *
+     * @param uuid the unique identifier of the account to delete; must not be null.
+     */
+    void deleteByUuid(UUID uuid);
 }

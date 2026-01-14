@@ -7,4 +7,4 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Builder;
 
 @Builder
-public record AspspListDTO(@JsonProperty("aspsps") List<AspspDTO> aspsps) {}
+public record EnableBankingAspspListDTO(@JsonProperty("aspsps") List<EnableBankingAspspDTO> aspsps) {}

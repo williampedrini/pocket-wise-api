@@ -5,9 +5,9 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Builder;
 
 @Builder
-public record TransactionExchangeRateDTO(
+public record EnableBankingTransactionExchangeRateDTO(
         @JsonProperty("unit_currency") String unitCurrency,
         @JsonProperty("exchange_rate") String exchangeRate,
         @JsonProperty("rate_type") String rateType,
         @JsonProperty("contract_identification") String contractIdentification,
-        @JsonProperty("instructed_amount") TransactionAmountDTO instructedAmount) {}
+        @JsonProperty("instructed_amount") EnableBankingTransactionAmountDTO instructedAmount) {}
